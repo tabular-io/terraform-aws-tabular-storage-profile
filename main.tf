@@ -37,23 +37,21 @@ resource "aws_iam_role" "default" {
 data "aws_iam_policy_document" "tabular" {
   statement {
     effect  = "Allow"
-    #tfsec:ignore:aws-iam-no-policy-wildcards
     actions = [
-      "s3:*"
+      "s3:ListBucket",
+      "s3:GetBucketLocation",
+      "s3:GetBucketNotification",
+      "s3:PutBucketNotification",
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:PutObjectAcl",
+      "s3:DeleteObject",
+      "s3:AbortMultipartUpload",
     ]
     resources = [
       "arn:aws:s3:::${var.bucket_name}",
       "arn:aws:s3:::${var.bucket_name}/*"
     ]
-  }
-
-  statement {
-    effect  = "Deny"
-    actions = [
-      "s3:DeleteBucket",
-      "s3:DeleteObjectVersion"
-    ]
-    resources = ["*"]
   }
 
   statement {
