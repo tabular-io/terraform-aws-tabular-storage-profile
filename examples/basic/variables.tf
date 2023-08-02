@@ -16,5 +16,5 @@ variable "delete_recovery_days" {
 
 variable "tabular_account_arn" {
   type        = string
-  description = "Tabular AWS Account ARN"
+  description = "Tabular AWS Account"
 }
