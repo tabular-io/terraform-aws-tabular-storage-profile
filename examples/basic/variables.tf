@@ -8,20 +8,20 @@ variable "external_id" {
   description = "Generated ID for trust policy"
 }
 
-variable "delete_recovery_days" {
-  type        = number
-  description = "The number of days after which deletes cannot be recovered"
-  default     = 7
-}
-
 variable "tabular_account_id" {
   type        = string
-  description = "Tabular Account Id"
+  description = "Tabular AWS Account"
   default     = "237881912361"
 }
 
 variable "tabular_region" {
   type        = string
-  description = "Tabular Warehouse location"
+  description = "Tabular Warehouse Location"
   default     = "us-east-1"
+}
+
+variable "force_destroy_s3_bucket" {
+  type        = bool
+  description = "All objects in bucket will be deleted"
+  default     = false
 }
