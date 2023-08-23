@@ -14,7 +14,14 @@ variable "delete_recovery_days" {
   default     = 7
 }
 
-variable "tabular_account_arn" {
+variable "tabular_account_id" {
   type        = string
-  description = "Tabular AWS Account ARN"
+  description = "Tabular Account Id"
+  default     = "237881912361"
+}
+
+variable "tabular_region" {
+  type        = string
+  description = "Tabular Warehouse location"
+  default     = "us-east-1"
 }

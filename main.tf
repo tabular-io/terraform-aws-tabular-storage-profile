@@ -5,7 +5,7 @@ data "aws_iam_policy_document" "assume_role" {
     effect = "Allow"
 
     principals {
-      identifiers = [var.tabular_account_arn]
+      identifiers = [var.tabular_account_id]
       type        = "AWS"
     }
 
@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "assume_role" {
 
     condition {
       test     = "ArnLike"
-      values   = ["arn:aws:iam::${var.tabular_account_arn}:role/TabularSignerServiceRole*"]
+      values   = ["arn:aws:iam::${var.tabular_account_id}:role/TabularSignerServiceRole*"]
       variable = "aws:PrincipalArn"
     }
 
@@ -191,4 +191,33 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
 resource "aws_s3_bucket_policy" "default" {
   bucket = aws_s3_bucket.default.id
   policy = data.aws_iam_policy_document.s3_bucket_policy.json
+}
+
+# S3 Buckets only support a single notification configuration. Declaring multiple aws_s3_bucket_notification resources
+# to the same S3 Bucket will cause a perpetual difference in configuration. See the example
+# "Trigger multiple Lambda functions" for an option.
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_notification
+resource "aws_s3_bucket_notification" "default" {
+  bucket = aws_s3_bucket.default.id
+
+  queue {
+    events        = ["s3:ObjectCreated:*"]
+    filter_prefix = "tabular/staged/"
+    filter_suffix = "checksum"
+    queue_arn     = "arn:aws:sqs:${var.tabular_region}:${var.tabular_account_id}:tabular-loader-s3-notifications-queue"
+  }
+
+  queue {
+    events        = ["s3:ObjectCreated:*"]
+    filter_prefix = "access-logs/"
+    filter_suffix = "checksum"
+    queue_arn     = "arn:aws:sqs:${var.tabular_region}:${var.tabular_account_id}:warehouses-s3-access-logs"
+  }
+
+  topic {
+    events        = ["s3:ObjectCreated:*"]
+    filter_prefix = "inventory/"
+    filter_suffix = "checksum"
+    topic_arn     = "arn:aws:sns:${var.tabular_region}:${var.tabular_account_id}:warehouses-s3-inventory-list-events"
+  }
 }
