@@ -1,39 +1,34 @@
-## Set Up Environment
+# AWS Tabular Storage Profile Terraform module
 
-### Install Dependencies
+Terraform module creates S3 Bucket, S3 Bucket configuration, and IAM Role resources on AWS and Storage Profile resource 
+on Tabular.
 
-```
-asdf plugin add terraform
-asdf plugin add pre-commit
-asdf plugin add golang
-asdf plugin add tflint
-asdf plugin add tfsec
-asdf install
-```
-
-### Install pre-commit hooks
+## Usage
 
 ```
-pre-commit install
+provider aws {
+    region = var.region
+}
+
+provider tabular {
+    organization_id = var.organization_id
+}
+
+module "tabular_bucket" {
+  source = "../../"
+
+  bucket_name        = "bucket-name"
+  external_id        = var.organization_id
+}
+
+resource "tabular_s3_storage_profile" "example" {
+  region         = var.region
+  s3_bucket_name = module.tabular_bucket.s3_bucket_name
+  role_arn       = module.tabular_bucket.iam_role_arn
+}
+
+resource "tabular_warehouse" "example" {
+  name            = "tabular-warehouse-name"
+  storage_profile = tabular_s3_storage_profile.example.id
+}
 ```
-
-## Testing
-
-The testing process begins by defining test cases using Terratest's intuitive API. These test cases can encompass a wide
-range of scenarios, such as resource creation, deletion, and modification. Terratest executes test cases against the 
-target Terraform modules. During the execution, Terratest verifies the expected outcomes against the actual results, 
-ensuring that the infrastructure behaves as intended.
-
-1. Configure dependencies
-    ```
-     cd test
-     go mod init "<MODULE_NAME>"
-     go mod tidy
-    ```
-2. Create Terraform example to test
-3. Update tests
-4. Run tests
-    ```
-   cd test
-   go test -v -timeout 15m
-   ```

@@ -3,9 +3,9 @@ variable "bucket_name" {
   description = "Name of the bucket to use for warehouse storage"
 }
 
-variable "external_id" {
+variable "organization_id" {
   type        = string
-  description = "Generated ID for trust policy"
+  description = "Tabular Organization ID"
 }
 
 variable "tabular_account_id" {
