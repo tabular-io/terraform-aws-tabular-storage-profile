@@ -15,8 +15,8 @@ provider tabular {
 }
 
 module "tabular_bucket" {
-  source = "../../"
-
+  source = "tabular-io/tabular-storage-profile/aws"
+  
   bucket_name        = "bucket-name"
   external_id        = var.organization_id
 }
